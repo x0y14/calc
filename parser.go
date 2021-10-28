@@ -1,7 +1,8 @@
 package calc
 
 // expr    = mul ("+" mul | "-" mul)*
-// mul     = primary ("*" primary | "/" primary)*
+// mul     = unary ("*" unary | "/" unary)*
+// unary   = ("+" | "-")? primary
 // primary = num | "(" expr ")"
 
 func NewParser(tokens []Token) Parser {
@@ -74,19 +75,28 @@ func (ps *Parser) Expr() Node {
 }
 
 func (ps *Parser) Mul() Node {
-	node := ps.Primary()
+	node := ps.Unary()
 
 	for !ps.isEof() {
 		if ps.consume("*") {
-			node = NewNode(NdMul, node, ps.Primary())
+			node = NewNode(NdMul, node, ps.Unary())
 		} else if ps.consume("/") {
-			node = NewNode(NdDiv, node, ps.Primary())
+			node = NewNode(NdDiv, node, ps.Unary())
 		} else {
 			break
 		}
 	}
 
 	return node
+}
+
+func (ps *Parser) Unary() Node {
+	if ps.consume("+") {
+		return ps.Primary()
+	} else if ps.consume("-") {
+		return NewNode(NdSub, NewNumNode(0), ps.Primary())
+	}
+	return ps.Primary()
 }
 
 func (ps *Parser) Primary() Node {
