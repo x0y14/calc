@@ -38,9 +38,9 @@ func TestCalculator_Calculate(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.in, func(t *testing.T) {
 			calculator := NewCalculator(50)
-			actual := calculator.Calculate(test.in)
-			if actual != test.want {
-				t.Fatalf("%v = %v, but result was %v", test.in, test.want, actual)
+			result := calculator.Calculate(test.in)
+			if result != test.want {
+				t.Fatalf("%v = %v, but result was %v", test.in, test.want, result)
 			}
 		})
 	}
