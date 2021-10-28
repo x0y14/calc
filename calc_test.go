@@ -33,6 +33,14 @@ func TestCalculator_Calculate(t *testing.T) {
 			"(3+5)/2",
 			4,
 		},
+		{
+			"+2*40",
+			80,
+		},
+		{
+			"-80*3-20",
+			-260,
+		},
 	}
 
 	for _, test := range tests {
