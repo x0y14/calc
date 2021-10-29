@@ -10,9 +10,6 @@ func NewCalculator(stackSize int) Calculator {
 type Calculator struct {
 	stack []int
 	sp    int
-	rdi   int
-	rax   int
-	al    int
 }
 
 func (c *Calculator) Calculate(expression string) int {
@@ -26,14 +23,6 @@ func (c *Calculator) Calculate(expression string) int {
 	node := ps.Expr()
 	c.traverse(node)
 	return c.pop()
-}
-
-func (c *Calculator) Is(expression string) bool {
-	c.Calculate(expression)
-	if c.rax == 1 {
-		return true
-	}
-	return false
 }
 
 func (c *Calculator) push(val int) {
@@ -90,86 +79,6 @@ func (c *Calculator) traverse(node Node) {
 		a := c.pop()
 		b := c.pop()
 		c.push(b / a)
-	case NdEqual:
-		// [ 0, 0, 1, 2, 3 ]
-		//         ^
-		c.rdi = c.pop() // 1
-		// [ 0, 0, 0, 2, 3 ]
-		//            ^
-		c.rax = c.pop() // 2
-		// [ 0, 0, 0, 0, 3 ]
-		//               ^
-		if c.rdi == c.rax {
-			c.al = 1
-			//c.push(1)
-		} else {
-			c.al = 0
-			//c.push(0)
-		}
-		c.rax = c.al
-	case NdNotEqual:
-		c.rdi = c.pop()
-		c.rax = c.pop()
-		if c.rdi != c.rax {
-			c.al = 1
-			//c.push(1)
-		} else {
-			c.al = 0
-			//c.push(0)
-		}
-		c.rax = c.al
-	case NdLt:
-		c.rdi = c.pop()
-		c.rax = c.pop()
-
-		if c.rax < c.rdi {
-			c.al = 1
-			//c.push(1)
-		} else {
-			c.al = 0
-			//c.push(0)
-		}
-
-		c.rax = c.al
-	case NdLte:
-		c.rdi = c.pop()
-		c.rax = c.pop()
-
-		if c.rax <= c.rdi {
-			c.al = 1
-			//c.push(1)
-		} else {
-			c.al = 0
-			//c.push(0)
-		}
-
-		c.rax = c.al
-	case NdGt:
-		c.rdi = c.pop()
-		c.rax = c.pop()
-
-		if c.rax > c.rdi {
-			c.al = 1
-			//c.push(1)
-		} else {
-			c.al = 0
-			//c.push(0)
-		}
-
-		c.rax = c.al
-	case NdGte:
-		c.rdi = c.pop()
-		c.rax = c.pop()
-
-		if c.rax >= c.rdi {
-			c.al = 1
-			//c.push(1)
-		} else {
-			c.al = 0
-			//c.push(0)
-		}
-
-		c.rax = c.al
 	}
 	return
 }
