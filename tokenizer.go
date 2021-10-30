@@ -55,7 +55,7 @@ func (tk *Tokenizer) consumeNumber() (Token, error) {
 }
 
 func (tk *Tokenizer) IsOperator(r rune) bool {
-	for _, opr := range []rune("+-*/") {
+	for _, opr := range []rune("+-*/!=<>") {
 		if opr == r {
 			return true
 		}

@@ -1,9 +1,12 @@
 package calc
 
-// expr    = mul ("+" mul | "-" mul)*
-// mul     = unary ("*" unary | "/" unary)*
-// unary   = ("+" | "-")? primary
-// primary = num | "(" expr ")"
+// expr       = equality
+// equality   = relational ("==" equality | "!=" equality)*
+// relational = add (">" add | ">=" add | "<" add | "<=" add)*
+// add        = mul ("+" mul | "-" mul)*
+// mul        = unary ("*" unary | "/" unary)*
+// unary      = ("+" | "-")? primary
+// primary    = num | "(" expr ")"
 
 func NewParser(tokens []Token) Parser {
 	return Parser{
@@ -60,6 +63,37 @@ func (ps *Parser) expectNum() int {
 }
 
 func (ps *Parser) Expr() Node {
+	return ps.Equality()
+}
+
+func (ps *Parser) Equality() Node {
+	node := ps.Relational()
+
+	if ps.consume("==") {
+		node = NewNode(NdEqual, node, ps.Relational())
+	} else if ps.consume("!=") {
+		node = NewNode(NdNotEqual, node, ps.Relational())
+	}
+
+	return node
+}
+
+func (ps *Parser) Relational() Node {
+	node := ps.Add()
+	if ps.consume("<") {
+		node = NewNode(NdLt, node, ps.Add())
+	} else if ps.consume("<=") {
+		node = NewNode(NdLte, node, ps.Add())
+	} else if ps.consume(">") {
+		node = NewNode(NdGt, node, ps.Add())
+	} else if ps.consume(">=") {
+		node = NewNode(NdGte, node, ps.Add())
+	}
+
+	return node
+}
+
+func (ps *Parser) Add() Node {
 	node := ps.Mul()
 
 	for !ps.isEof() {

@@ -3,12 +3,18 @@ package calc
 type NodeKind int
 
 const (
-	_     NodeKind = iota
-	NdAdd          // +
-	NdSub          // -
-	NdMul          // *
-	NdDiv          // /
-	NdNum          // 整数
+	_          NodeKind = iota
+	NdAdd               // +
+	NdSub               // -
+	NdMul               // *
+	NdDiv               // /
+	NdEqual             // ==
+	NdNotEqual          // !=
+	NdLt                // <
+	NdLte               // <=
+	NdGt                // >
+	NdGte               // >=
+	NdNum               // 整数
 )
 
 func NewNode(kind NodeKind, lhs Node, rhs Node) Node {

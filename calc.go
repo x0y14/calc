@@ -10,6 +10,9 @@ func NewCalculator(stackSize int) Calculator {
 type Calculator struct {
 	stack []int
 	sp    int
+	rax   int
+	rdi   int
+	al    int
 }
 
 func (c *Calculator) Calculate(expression string) int {
@@ -53,6 +56,19 @@ func (c *Calculator) pop() int {
 	return val
 }
 
+func (c *Calculator) pop2r() {
+	c.rax = c.pop()
+	c.rdi = c.pop()
+}
+
+func (c *Calculator) Is(text string) bool {
+	c.Calculate(text)
+	if c.rax == 1 {
+		return true
+	}
+	return false
+}
+
 func (c *Calculator) traverse(node Node) {
 	if node.kind == NdNum {
 		c.push(node.val)
@@ -79,6 +95,55 @@ func (c *Calculator) traverse(node Node) {
 		a := c.pop()
 		b := c.pop()
 		c.push(b / a)
+
+	case NdEqual:
+		c.pop2r()
+		if c.rdi == c.rax {
+			c.al = 1
+		} else {
+			c.al = 0
+		}
+		c.rax = c.al
+	case NdNotEqual:
+		c.pop2r()
+		if c.rdi != c.rax {
+			c.al = 1
+		} else {
+			c.al = 0
+		}
+		c.rax = c.al
+	case NdLt:
+		c.pop2r()
+		if c.rdi < c.rax {
+			c.al = 1
+		} else {
+			c.al = 0
+		}
+		c.rax = c.al
+	case NdLte:
+		c.pop2r()
+		if c.rdi <= c.rax {
+			c.al = 1
+		} else {
+			c.al = 0
+		}
+		c.rax = c.al
+	case NdGt:
+		c.pop2r()
+		if c.rdi > c.rax {
+			c.al = 1
+		} else {
+			c.al = 0
+		}
+		c.rax = c.al
+	case NdGte:
+		c.pop2r()
+		if c.rdi >= c.rax {
+			c.al = 1
+		} else {
+			c.al = 0
+		}
+		c.rax = c.al
 	}
 	return
 }

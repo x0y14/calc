@@ -53,3 +53,37 @@ func TestCalculator_Calculate(t *testing.T) {
 		})
 	}
 }
+
+func TestCalculator_Is(t *testing.T) {
+	var tests = []struct {
+		in   string
+		want bool
+	}{
+		{
+			"0 < 5",
+			true,
+		},
+		{
+			"0 > 5",
+			false,
+		},
+		{
+			"3*232*(0-13)+323-3232/32 < 0",
+			true,
+		},
+		{
+			"-1 * (3*232*(0-13)+323-3232/32) == -(3*232*(0-13)+323-3232/32)",
+			true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.in, func(t *testing.T) {
+			calculator := NewCalculator(50)
+			result := calculator.Is(test.in)
+			if result != test.want {
+				t.Fatalf("%v = %v, but result was %v", test.in, test.want, result)
+			}
+		})
+	}
+}
