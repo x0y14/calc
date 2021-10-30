@@ -55,12 +55,29 @@ func (tk *Tokenizer) consumeNumber() (Token, error) {
 }
 
 func (tk *Tokenizer) IsOperator(r rune) bool {
-	for _, opr := range []rune("+-*/()") {
+	for _, opr := range []rune("+-*/") {
 		if opr == r {
 			return true
 		}
 	}
 	return false
+}
+
+func (tk *Tokenizer) IsParen(r rune) bool {
+	for _, opr := range []rune("()") {
+		if opr == r {
+			return true
+		}
+	}
+	return false
+}
+
+func (tk *Tokenizer) consumeParen() Token {
+	s := tk.pos
+	r := tk.curt()
+	tk.goNext()
+	e := tk.pos
+	return NewToken(TkReserved, [2]int{s, e}, string(r), 0)
 }
 
 func (tk *Tokenizer) Tokenize() ([]Token, error) {
@@ -78,6 +95,8 @@ func (tk *Tokenizer) Tokenize() ([]Token, error) {
 			s := string(r)
 			tokens = append(tokens, NewToken(TkReserved, [2]int{tk.pos, tk.pos + 1}, s, 0))
 			tk.goNext()
+		} else if tk.IsParen(r) {
+			tokens = append(tokens, tk.consumeParen())
 		} else if unicode.IsSpace(r) {
 			tk.goNext()
 		} else {
