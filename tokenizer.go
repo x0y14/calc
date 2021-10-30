@@ -63,6 +63,23 @@ func (tk *Tokenizer) IsOperator(r rune) bool {
 	return false
 }
 
+func (tk *Tokenizer) consumeOperator() Token {
+	opr := ""
+	s := tk.pos
+	for !tk.isEof() {
+		r := tk.curt()
+		if tk.IsOperator(r) {
+			opr += string(r)
+		} else {
+			break
+		}
+		tk.goNext()
+	}
+	e := tk.pos
+
+	return NewToken(TkReserved, [2]int{s, e}, opr, 0)
+}
+
 func (tk *Tokenizer) IsParen(r rune) bool {
 	for _, opr := range []rune("()") {
 		if opr == r {
@@ -92,9 +109,7 @@ func (tk *Tokenizer) Tokenize() ([]Token, error) {
 			}
 			tokens = append(tokens, tok)
 		} else if tk.IsOperator(r) {
-			s := string(r)
-			tokens = append(tokens, NewToken(TkReserved, [2]int{tk.pos, tk.pos + 1}, s, 0))
-			tk.goNext()
+			tokens = append(tokens, tk.consumeOperator())
 		} else if tk.IsParen(r) {
 			tokens = append(tokens, tk.consumeParen())
 		} else if unicode.IsSpace(r) {
