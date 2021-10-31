@@ -18,6 +18,10 @@ func TestParser_Expr(t *testing.T) {
 			"1*2+(3+4)",
 			"1*2+(3+4)",
 		},
+		{
+			"1 == 1 && 2 == 2",
+			"1 == 1 && 2 == 2",
+		},
 	}
 
 	for _, test := range tests {

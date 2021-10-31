@@ -1,6 +1,6 @@
 package calc
 
-// expr       = equality
+// expr       = equality ("||" equality | "&&" equality)
 // equality   = relational ("==" equality | "!=" equality)*
 // relational = add (">" add | ">=" add | "<" add | "<=" add)*
 // add        = mul ("+" mul | "-" mul)*
@@ -63,7 +63,13 @@ func (ps *Parser) expectNum() int {
 }
 
 func (ps *Parser) Expr() Node {
-	return ps.Equality()
+	node := ps.Equality()
+	if ps.consume("&&") {
+		node = NewNode(NdAnd, node, ps.Equality())
+	} else if ps.consume("||") {
+		node = NewNode(NdOr, node, ps.Equality())
+	}
+	return node
 }
 
 func (ps *Parser) Equality() Node {

@@ -14,6 +14,8 @@ const (
 	NdLte               // <=
 	NdGt                // >
 	NdGte               // >=
+	NdOr                // ||
+	NdAnd               // &&
 	NdNum               // 整数
 )
 
