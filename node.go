@@ -16,7 +16,11 @@ const (
 	NdGte               // >=
 	NdOr                // ||
 	NdAnd               // &&
-	NdNum               // 整数
+	NdAssign            // =
+	NdStmt              // ;
+
+	NdNum // 整数
+	NdIdent
 )
 
 func NewNode(kind NodeKind, lhs Node, rhs Node) Node {
@@ -29,14 +33,24 @@ func NewNode(kind NodeKind, lhs Node, rhs Node) Node {
 
 func NewNumNode(val int) Node {
 	return Node{
-		kind: NdNum,
-		val:  val,
+		kind:   NdNum,
+		valInt: val,
+	}
+}
+
+func NewIdentNode(val string) Node {
+	return Node{
+		kind:      NdIdent,
+		valString: val,
 	}
 }
 
 type Node struct {
-	kind NodeKind
-	lhs  *Node
-	rhs  *Node
-	val  int
+	kind      NodeKind
+	lhs       *Node
+	rhs       *Node
+	valInt    int
+	valString string
+	valFloat  float64
+	valBool   bool
 }

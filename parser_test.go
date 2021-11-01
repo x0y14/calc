@@ -20,7 +20,11 @@ func TestParser_Expr(t *testing.T) {
 		},
 		{
 			"1 == 1 && 2 == 2",
-			"1 == 1 && 2 == 2",
+			"1 == 1 && 2 == 2;",
+		},
+		{
+			"var",
+			"ident = 1 + 2;",
 		},
 	}
 
@@ -33,7 +37,10 @@ func TestParser_Expr(t *testing.T) {
 			}
 
 			ps := NewParser(tokens)
-			node := ps.Expr()
+			node, err := ps.Stmt()
+			if err != nil {
+				t.Fatal(err)
+			}
 			fmt.Printf("%v\n", node)
 		})
 	}

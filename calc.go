@@ -34,7 +34,7 @@ func (c *Calculator) push(val int) {
 	//           ^
 	//           sp
 	// pushed:
-	// [ 0 0 0 val 0 ]
+	// [ 0 0 0 valInt 0 ]
 	//         ^
 	//         sp
 
@@ -43,7 +43,7 @@ func (c *Calculator) push(val int) {
 }
 func (c *Calculator) pop() int {
 	// now:
-	// [ 0 0 0 val 0 ]
+	// [ 0 0 0 valInt 0 ]
 	//         ^
 	//         sp
 	// popped:
@@ -71,7 +71,7 @@ func (c *Calculator) Is(text string) bool {
 
 func (c *Calculator) traverse(node Node) {
 	if node.kind == NdNum {
-		c.push(node.val)
+		c.push(node.valInt)
 		return
 	}
 

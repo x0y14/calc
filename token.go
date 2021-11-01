@@ -8,6 +8,7 @@ const (
 	_ TokenKind = iota
 	TkReserved
 	TkNum
+	TkIdent
 	TkEof
 )
 
@@ -38,5 +39,5 @@ type Token struct {
 }
 
 func (tok Token) String() string {
-	return fmt.Sprintf("Token{ kind: %v, val: %v, lit: %v, pos: %v-%v }", tok.kind.String(), tok.val, tok.lit, tok.pos[0], tok.pos[1])
+	return fmt.Sprintf("Token{ kind: %v, valInt: %v, lit: %v, pos: %v-%v }", tok.kind.String(), tok.val, tok.lit, tok.pos[0], tok.pos[1])
 }

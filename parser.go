@@ -1,12 +1,18 @@
 package calc
 
-// expr       = equality ("||" equality | "&&" equality)
+import "fmt"
+
+// program    = stmt*
+// stmt       = expr ";"
+// expr       = assign
+// assign     = logically ("=" logically)?
+// logically  = equality ("||" equality | "&&" equality)
 // equality   = relational ("==" equality | "!=" equality)*
 // relational = add (">" add | ">=" add | "<" add | "<=" add)*
 // add        = mul ("+" mul | "-" mul)*
 // mul        = unary ("*" unary | "/" unary)*
 // unary      = ("+" | "-")? primary
-// primary    = num | "(" expr ")"
+// primary    = num | ident | "(" expr ")"
 
 func NewParser(tokens []Token) Parser {
 	return Parser{
@@ -43,6 +49,15 @@ func (ps *Parser) consume(op string) bool {
 	return true
 }
 
+func (ps *Parser) expectIdent() string {
+	if ps.curt().kind != TkIdent {
+		panic("unexpected")
+	}
+	val := ps.curt().lit
+	ps.goNext()
+	return val
+}
+
 func (ps *Parser) expect(op string) bool {
 	if ps.curt().lit == op {
 		ps.goNext()
@@ -62,7 +77,28 @@ func (ps *Parser) expectNum() int {
 	return val
 }
 
+func (ps *Parser) Stmt() (Node, error) {
+	node := ps.Expr()
+	if !ps.expect(";") {
+		return Node{}, fmt.Errorf("unexpted: %v", ps.next().String())
+	}
+	return node, nil
+}
+
 func (ps *Parser) Expr() Node {
+	return ps.Assign()
+}
+
+func (ps *Parser) Assign() Node {
+	node := ps.Logically()
+	if ps.consume("=") {
+		node = NewNode(NdAssign, node, ps.Logically())
+	}
+
+	return node
+}
+
+func (ps *Parser) Logically() Node {
 	node := ps.Equality()
 	if ps.consume("&&") {
 		node = NewNode(NdAnd, node, ps.Equality())
@@ -145,5 +181,13 @@ func (ps *Parser) Primary() Node {
 		ps.expect(")")
 		return node
 	}
-	return NewNumNode(ps.expectNum())
+
+	switch ps.curt().kind {
+	case TkNum:
+		return NewNumNode(ps.expectNum())
+	case TkIdent:
+		return NewIdentNode(ps.expectIdent())
+	default:
+		panic("unexpected")
+	}
 }

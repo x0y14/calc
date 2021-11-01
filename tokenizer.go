@@ -55,7 +55,7 @@ func (tk *Tokenizer) consumeNumber() (Token, error) {
 }
 
 func (tk *Tokenizer) IsOperator(r rune) bool {
-	for _, opr := range []rune("+-*/!=<>|&") {
+	for _, opr := range []rune("+-*/!=<>|&;") {
 		if opr == r {
 			return true
 		}
@@ -78,6 +78,22 @@ func (tk *Tokenizer) consumeOperator() Token {
 	e := tk.pos
 
 	return NewToken(TkReserved, [2]int{s, e}, opr, 0)
+}
+
+func (tk *Tokenizer) consumeIdent() Token {
+	ident := ""
+	s := tk.pos
+	for !tk.isEof() {
+		r := tk.curt()
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			ident += string(r)
+		} else {
+			break
+		}
+		tk.goNext()
+	}
+	e := tk.pos
+	return NewToken(TkIdent, [2]int{s, e}, ident, 0)
 }
 
 func (tk *Tokenizer) IsParen(r rune) bool {
@@ -114,6 +130,8 @@ func (tk *Tokenizer) Tokenize() ([]Token, error) {
 			tokens = append(tokens, tk.consumeParen())
 		} else if unicode.IsSpace(r) {
 			tk.goNext()
+		} else if unicode.IsLetter(r) {
+			tokens = append(tokens, tk.consumeIdent())
 		} else {
 			return nil, fmt.Errorf("syntax error : %v", string(r))
 		}
